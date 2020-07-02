@@ -17,21 +17,24 @@ class Course(models.Model):
 
 
 class Post(models.Model):
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, null=True, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
     text = models.TextField()
     order = models.PositiveIntegerField()
 
 
 class CourseStudents(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class StudentHistory(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE)
-    HEALTH_CHOICES = ['suger', 'pressure', 'height', 'weight', 'food'
-                      'sleep', 'watter', 'coffee', 'tea', 'running', 'cycling', 'swimming', 'hiking', 'walking', 'dancing']
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    HEALTH_CHOICES = ['sugar', 'pressure', 'height', 'weight', 'food'
+                      'sleep', 'watter', 'coffee', 'tea', 'running', 'cycling', 'swimming',
+                      'hiking', 'walking', 'dancing']
     HEALTH_CHOICES = [(i, item) for i, item in enumerate(HEALTH_CHOICES)]
-    type = models.CharField(max_length=9, choices=HEALTH_CHOICES, default='1')
+    history_type = models.CharField(
+        max_length=9, choices=HEALTH_CHOICES, default='1')
     details = models.TextField(max_length=200)
+    value = models.TextField(max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True)
