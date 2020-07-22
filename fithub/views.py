@@ -77,7 +77,7 @@ def add_course(request: AsgiRequest):
             course = Course(
                 creator=user, name=name, price=price)
             course.save()
-            return JsonResponse({"status": "ok", "student_history": course.pk}, status=HTTP_200_OK)
+            return JsonResponse({"status": "ok", "course_id": course.pk}, status=HTTP_200_OK)
     return JsonResponse({"status": "error"}, status=HTTP_400_BAD_REQUEST)
 
 
@@ -91,7 +91,7 @@ def enroll_course(request: AsgiRequest):
         course = Course.objects.get(pk=course_id)
         course_student = CourseStudents(course=course, user=user)
         course_student.save()
-        return JsonResponse({"status": "ok", "course_student": course_student.pk}, status=HTTP_200_OK)
+        return JsonResponse({"status": "ok", "course_student_id": course_student.pk}, status=HTTP_200_OK)
     return JsonResponse({"status": "error"}, status=HTTP_400_BAD_REQUEST)
 
 
@@ -121,17 +121,6 @@ def add_post(request: AsgiRequest):
 
 
 @csrf_exempt
-def delete_post(request: AsgiRequest):
-    if request.method == 'POST':
-        body = json.loads(request.body)
-        post_id = body['post_id']
-        post = Post.objects.get(pk=post_id)
-        post.delete()
-        return JsonResponse({"status": "ok"}, status=HTTP_200_OK)
-    return JsonResponse({"status": "error"}, status=HTTP_400_BAD_REQUEST)
-
-
-@csrf_exempt
 def edit_post(request: AsgiRequest):
     if request.method == 'POST':
         body = json.loads(request.body)
@@ -143,6 +132,17 @@ def edit_post(request: AsgiRequest):
         post.order = order
         post.save()
         return JsonResponse({"status": "ok", "post_id": post.pk}, status=HTTP_200_OK)
+    return JsonResponse({"status": "error"}, status=HTTP_400_BAD_REQUEST)
+
+
+@csrf_exempt
+def delete_post(request: AsgiRequest):
+    if request.method == 'POST':
+        body = json.loads(request.body)
+        post_id = body['post_id']
+        post = Post.objects.get(pk=post_id)
+        post.delete()
+        return JsonResponse({"status": "ok"}, status=HTTP_200_OK)
     return JsonResponse({"status": "error"}, status=HTTP_400_BAD_REQUEST)
 
 
