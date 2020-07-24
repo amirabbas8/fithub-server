@@ -35,7 +35,11 @@ def login(request: AsgiRequest):
         user = authenticate(username=username, password=password)
         if user is not None:
             detail = UserDetail.objects.get(user=user)
-            return JsonResponse({"status": "ok", "user_id": user.pk, "license_number": detail.license_number}, status=HTTP_200_OK)
+            if detail.license_number == '':
+                ln = None
+            else:
+                ln = int(detail.license_number)
+            return JsonResponse({"status": "ok", "user_id": user.pk, "license_number": ln}, status=HTTP_200_OK)
     return JsonResponse({"status": "error"}, status=HTTP_400_BAD_REQUEST)
 
 
