@@ -64,7 +64,11 @@ class ActionTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         content = json.loads(response.content.decode("utf-8"))
         course_student_id = content['course_student_id']
-
+        
+        response = self.post_url(
+            '/get_course_posts', {'user_id': self.user_id, 'course_id': course_id})
+        self.assertEqual(response.status_code, 200)
+        
         response = self.post_url(
             '/left_course', {'user_id': self.user_id, 'course_student_id': course_student_id})
         self.assertEqual(response.status_code, 200)
