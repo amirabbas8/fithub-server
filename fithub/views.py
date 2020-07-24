@@ -22,7 +22,7 @@ def signup(request: AsgiRequest):
         detail = UserDetail(user=user, phone=phone,
                             license_number=license_number, balance=0)
         detail.save()
-        return JsonResponse({"status": "ok", "user_id": user.pk}, status=HTTP_200_OK)
+        return JsonResponse({"status": "ok", "user_id": user.pk, "license_number": license_number}, status=HTTP_200_OK)
     return JsonResponse({"status": "error"}, status=HTTP_400_BAD_REQUEST)
 
 
@@ -34,7 +34,8 @@ def login(request: AsgiRequest):
         password = body['password']
         user = authenticate(username=username, password=password)
         if user is not None:
-            return JsonResponse({"status": "ok", "user_id": user.pk}, status=HTTP_200_OK)
+            detail = UserDetail.objects.get(user=user)
+            return JsonResponse({"status": "ok", "user_id": user.pk, "license_number": detail.license_number}, status=HTTP_200_OK)
     return JsonResponse({"status": "error"}, status=HTTP_400_BAD_REQUEST)
 
 
