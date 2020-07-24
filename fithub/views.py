@@ -7,6 +7,8 @@ from django.contrib.auth import authenticate
 from django.core import serializers
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
 from .models import UserDetail, StudentHistory, Course, CourseStudents, Post
+from django.db.models import F
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 @csrf_exempt
@@ -165,8 +167,10 @@ def get_course_posts(request: AsgiRequest):
 @csrf_exempt
 def get_courses(request: AsgiRequest):
     if request.method == 'POST':
-        courses = Course.objects.all()
-        courses_json = json.loads(serializers.serialize('json', courses))
+        courses = Course.objects.values(
+            'name', 'price', course_id=F('pk')).all()
+        courses_json = json.loads(json.dumps(
+            list(courses), cls=DjangoJSONEncoder))
         return JsonResponse({"status": "ok", "courses": courses_json}, status=HTTP_200_OK)
     return JsonResponse({"status": "error"}, status=HTTP_400_BAD_REQUEST)
 
@@ -176,7 +180,9 @@ def get_my_courses(request: AsgiRequest):
     if request.method == 'POST':
         body = json.loads(request.body)
         user_id = body['user_id']
-        my_courses = Course.objects.filter(coursestudents__user=user_id)
-        my_courses_json = json.loads(serializers.serialize('json', my_courses))
+        my_courses = CourseStudents.objects.values('course_id', course_student_id=F('pk'), price=F('course__price'),
+                                                   name=F('course__name')).filter(user=user_id)
+        my_courses_json = json.loads(json.dumps(
+            list(my_courses), cls=DjangoJSONEncoder))
         return JsonResponse({"status": "ok", "courses": my_courses_json}, status=HTTP_200_OK)
     return JsonResponse({"status": "error"}, status=HTTP_400_BAD_REQUEST)
