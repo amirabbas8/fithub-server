@@ -152,7 +152,7 @@ def get_course_posts(request: AsgiRequest):
     if request.method == 'POST':
         body = json.loads(request.body)
         course_id = body['course_id']
-        posts = Post.objects.filter(pk=course_id)
+        posts = Post.objects.filter(course_id=course_id)
         posts_json = json.loads(serializers.serialize('json', posts))
         return JsonResponse({"status": "ok", "posts": posts_json}, status=HTTP_200_OK)
     return JsonResponse({"status": "error"}, status=HTTP_400_BAD_REQUEST)
