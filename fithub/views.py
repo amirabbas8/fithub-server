@@ -160,7 +160,6 @@ def get_course_posts(request: AsgiRequest):
 @csrf_exempt
 def get_courses(request: AsgiRequest):
     if request.method == 'POST':
-        body = json.loads(request.body)
         courses = Course.objects.all()
         courses_json = json.loads(serializers.serialize('json', courses))
         return JsonResponse({"status": "ok", "courses": courses_json}, status=HTTP_200_OK)
