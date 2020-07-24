@@ -35,7 +35,7 @@ def login(request: AsgiRequest):
         user = authenticate(username=username, password=password)
         if user is not None:
             detail = UserDetail.objects.get(user=user)
-            if detail.license_number == '':
+            if detail.license_number == '' or detail.license_number == None:
                 ln = None
             else:
                 ln = int(detail.license_number)
@@ -156,7 +156,7 @@ def get_course_posts(request: AsgiRequest):
     if request.method == 'POST':
         body = json.loads(request.body)
         course_id = body['course_id']
-        posts = Post.objects.filter(course_id=course_id)
+        posts = Post.objects.filter(course_id=course_id).order_by('order')
         posts_json = json.loads(serializers.serialize('json', posts))
         return JsonResponse({"status": "ok", "posts": posts_json}, status=HTTP_200_OK)
     return JsonResponse({"status": "error"}, status=HTTP_400_BAD_REQUEST)
@@ -176,7 +176,7 @@ def get_my_courses(request: AsgiRequest):
     if request.method == 'POST':
         body = json.loads(request.body)
         user_id = body['user_id']
-        my_courses = CourseStudents.objects.filter(user=user_id)
+        my_courses = Course.objects.filter(coursestudents__user=user_id)
         my_courses_json = json.loads(serializers.serialize('json', my_courses))
         return JsonResponse({"status": "ok", "courses": my_courses_json}, status=HTTP_200_OK)
     return JsonResponse({"status": "error"}, status=HTTP_400_BAD_REQUEST)
