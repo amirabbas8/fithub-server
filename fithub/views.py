@@ -168,7 +168,7 @@ def get_course_posts(request: AsgiRequest):
 def get_courses(request: AsgiRequest):
     if request.method == 'POST':
         courses = Course.objects.values(
-            'name', 'price', course_id=F('pk')).all()
+            'name', 'price', couch=F('creator__username'), course_id=F('pk')).all()
         courses_json = json.loads(json.dumps(
             list(courses), cls=DjangoJSONEncoder))
         return JsonResponse({"status": "ok", "courses": courses_json}, status=HTTP_200_OK)
@@ -181,7 +181,7 @@ def get_my_courses(request: AsgiRequest):
         body = json.loads(request.body)
         user_id = body['user_id']
         my_courses = CourseStudents.objects.values('course_id', course_student_id=F('pk'), price=F('course__price'),
-                                                   name=F('course__name')).filter(user=user_id)
+                                                   couch=F('creator__username'), name=F('course__name')).filter(user=user_id)
         my_courses_json = json.loads(json.dumps(
             list(my_courses), cls=DjangoJSONEncoder))
         return JsonResponse({"status": "ok", "courses": my_courses_json}, status=HTTP_200_OK)
